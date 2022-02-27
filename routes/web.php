@@ -28,7 +28,3 @@ Route::controller(UrlController::class)->prefix('urls')
         Route::post('short', 'store');
         Route::get('{short}', 'redirect')->name('redirect');
     });
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
