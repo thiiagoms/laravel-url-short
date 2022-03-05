@@ -28,13 +28,13 @@
                 <tr>
                     <td>{{ $url['original'] }}</td>
                     <td>
-                        <a href="{{ route('urls.redirect', ['short' => $url['short'] ]) }}">
+                        <a href="{{ route('urls.redirectUser', ['short' => $url['short'] ]) }}">
                             {{ $url['short'] }}
                         </a>
                     </td>
                     <td>{{ $url['clicks'] }}</td>
                 </tr>
-            @endforeach`
+            @endforeach
         </tbody>
     </table>
 
