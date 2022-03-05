@@ -2,137 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Url;
+use App\Services\UrlService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\{RedirectResponse, Request, Response};
 
 class UrlController extends Controller
 {
     /**
+     * Logical business
+     *
+     * @var UrlService
+     */
+    private UrlService $urlService;
+
+    public function __construct(UrlService $urlService)
+    {
+        $this->urlService = $urlService;
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(Request $request): View
     {
         return view('urls.index', [
-            'urls' => Url::all()
+            'urls' => $this->urlService->urlList()
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new url.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('urls.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create new url resource
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
 
         if (filter_var($request->url, FILTER_VALIDATE_URL)) {
+            $short = $this->urlService->createUrlShort($request->url());
 
-            $short = $this->generateRandomUuid();
-
-            Url::create([
-                'original' => $request->url,
-                'short' => $short
-            ]);
-
-            return redirect()->route('urls.index');
+            if ($short) {
+                return redirect()->route('urls.index');
+            }
         }
 
-        return redirect()->back()
-            ->withErrors("Url {$request->url} is invalid");
-    }
-
-
-    /**
-     * Return "uuid" message
-     * 
-     * @return string
-     */
-    private function generateRandomUuid(): string
-    {
-        $specialCharacters = str_split(
-            'abcdefghijklmnopqrstuvwxyz'.
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.
-            '0123456789!@#$%^&*()'
-        );
-
-        $rand = '';
-
-        foreach(array_rand($specialCharacters, 5) as $seed) {
-            $rand .= $specialCharacters[$seed];
-        }
-
-        return $rand;
-    }
-    
-    
-    public function redirect(string $shortUrl)
-    {
-        $url = Url::where('short', $shortUrl)
-            ->get(['original', 'clicks'])->first();
-
-        $url->clicks += 1;
-
-        Url::where('short', $shortUrl)
-            ->update(['clicks' => $url->clicks]);
-        
-        return redirect($url->original);
+        return redirect()->back()->withErrors("Url {$request->url} is invalid");
     }
 
     /**
-     * Display the specified resource.
+     * Redirect user to original url
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param string $shortUrl
+     * @return RedirectResponse
      */
-    public function show($id)
+    public function redirectUser(string $shortUrl): RedirectResponse
     {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return redirect($this->urlService->redirectTo($shortUrl));
     }
 }

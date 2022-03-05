@@ -26,5 +26,5 @@ Route::controller(UrlController::class)->prefix('urls')
         Route::get('', 'index')->name('index');
         Route::get('short', 'create')->name('create');
         Route::post('short', 'store');
-        Route::get('{short}', 'redirect')->name('redirect');
+        Route::get('{short}', 'redirectUser')->name('redirectUser');
     });
