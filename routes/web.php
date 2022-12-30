@@ -15,16 +15,14 @@ use App\Http\Controllers\UrlController;
 */
 
 Route::get('/', function () {
-    // return view('welcome');
-    return redirect()->route('urls.index');
+    return redirect()->route('url.index');
 });
 
-Route::controller(UrlController::class)->prefix('urls')
-    ->name('urls.')
+Route::controller(UrlController::class)
+    ->prefix('url')
+    ->name('url.')
     ->group(function () {
-
         Route::get('', 'index')->name('index');
         Route::get('short', 'create')->name('create');
         Route::post('short', 'store');
-        Route::get('{short}', 'redirectUser')->name('redirectUser');
     });
