@@ -9,49 +9,48 @@
 You can short your favorites urls with this application! Only for **education purposes**!
 
 - [Dependencies](#Dependencies)
-- [Usage](#Usage)
+- [Install](#Install)
+- [Run](#Run)
 
+## Dependencies
 
-### Dependencies
+- Docker
 
-* PHP ^8.1
-* Composer
-* Database (MySQL, Postgres, etc)
+## Install
 
-### Usage
-
-- First, clone this repository:
+01- Clone this repository:
 
 ```bash
-$ git clone https://github.com/thiiagoms/urlshort
+$ git clone https://github.com/thiiagoms/url-short.git
 ```
 
-- Second, install dependencies:
-
+02 - Change to repository directory:
 ```bash
-$ cd urlshort
-$ composer install
+$ cd url-short
 ```
-- Third, copy `.env.example` to  `.env` and put your **database credentials** in `.env` file:
 
+03 - Execute `setup.sh`: 
 ```bash
-$ cp .env.example .env
-DB_CONNECTION=mysql
-DB_HOST=[YOUR_DATABASE_HOST]
-DB_PORT=[YOUR_DATABASE_PORT]
-DB_DATABASE=[YOUR_DATABASE_NAME]
-DB_USERNAME=[YOUR_DATABASE_USERNAME]
-DB_PASSWORD=P[YOUR_DATABASE_PASSWORD]
+url-short $ chmod +x ./setup.sh
+url-short $ ./setup.sh
 
+██╗   ██╗██████╗ ██╗         ███████╗██╗  ██╗ ██████╗ ██████╗ ████████╗
+██║   ██║██╔══██╗██║         ██╔════╝██║  ██║██╔═══██╗██╔══██╗╚══██╔══╝
+██║   ██║██████╔╝██║         ███████╗███████║██║   ██║██████╔╝   ██║
+██║   ██║██╔══██╗██║         ╚════██║██╔══██║██║   ██║██╔══██╗   ██║
+╚██████╔╝██║  ██║███████╗    ███████║██║  ██║╚██████╔╝██║  ██║   ██║
+ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+
+    [*] Author: Thiago Silva AKA thiiagoms
+    [*] E-mail: thiagom.devsec@gmail.com
+
+=> SetUp containers
+
+=> Install app dependencies
+
+=> Running migrations
+
+[*] Listening application on http://localhost:8000
 ```
 
-- Fourth, run migrations:
-
-```php
-$ php artisan migrate
-```
-
-- Fifth, stand up the server and go to `http://localhost:8000`
-```php
-$ php artisan serve
-```
+04 - Go to `http://localhost:8000`
