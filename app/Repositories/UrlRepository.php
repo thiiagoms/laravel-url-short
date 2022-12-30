@@ -2,32 +2,32 @@
 
 namespace App\Repositories;
 
+use App\Contracts\UrlContract;
 use App\Models\Url;
 use Illuminate\Database\Eloquent\Collection;
 
-class UrlRepository
+/**
+ * URL Repository (make database operations) package
+ *
+ * @package App\Repositories
+ * @author  Thiago Silva <thiagom.devsec@gmail.com>
+ * @version 1.1
+ */
+class UrlRepository extends Repository implements UrlContract
 {
     /**
-     * Url Model
+     * Model injection
      *
-     * @var Url
+     * @var object
      */
-    private Url $url;
-
-    /**
-     * @param Url $urlModel
-     */
-    public function __construct(Url $urlModel)
-    {
-        $this->model = $urlModel;
-    }
+    protected $model = Url::class;
 
     /**
      * Return all urls list
      *
      * @return Collection
      */
-    public function getAll(): Collection
+    public function all(): Collection
     {
         return $this->model->all();
     }
@@ -36,9 +36,9 @@ class UrlRepository
      * Create new url resource
      *
      * @param array $data - data to store
-     * @return mixed
+     * @return int
      */
-    public function createNew(array $data): mixed
+    public function createNew(array $data): Url
     {
         return $this->model->create($data);
     }
@@ -52,7 +52,7 @@ class UrlRepository
     public function search(string $urlShort): mixed
     {
         return $this->model->where('short', $urlShort)
-            ->get(['original', 'clicks'])->first();
+            ->get(['origin', 'clicks'])->first();
     }
 
     /**
