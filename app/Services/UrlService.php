@@ -1,31 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Contracts\UrlContract;
 use Illuminate\Database\Eloquent\Collection;
-use App\Repositories\UrlRepository;
+use App\Exceptions\Url\UrlEmptyException;
 
 /**
- * Url service
+ * URL Service (business logic) package
  *
  * @package App\Services
- * @author  Thiago <thiagom.devsec@gmail.com>
+ * @author  Thiago Silva <thiagom.devsec@gmail.com>
+ * @version 1.1
  */
-class UrlService
+final class UrlService
 {
     /**
-     * Url repository object
+     * Init UrlService with UrlContract
      *
-     * @var UrlRepository
+     * @param UrlContract $urlContract
      */
-    private UrlRepository $urlRepo;
-
-    /**
-     * @param UrlRepository $repository
-     */
-    public function __construct(UrlRepository $repository)
+    public function __construct(private UrlContract $urlContract)
     {
-        $this->urlRepo = $repository;
     }
 
     /**
@@ -35,27 +33,54 @@ class UrlService
      */
     public function urlList(): Collection
     {
-        return $this->urlRepo->getAll();
+        return $this->urlContract->all();
     }
 
     /**
-     * Create new urlshort
+     * TODO: Check if url is valid
      *
-     * Retornar uma nova url short
+     * @param string $url
+     * @return boolean
+     */
+    private function isValidUrl(string $url)
+    {
+    }
+
+    /**
+     * Check if short already exists in database
      *
-     * procurar no banco se ja existe, se existir gerar novamente e verificar,
-     * se nao existir retornar uma nova
+     * @param string $short
+     * @return string
+     */
+    private function shortExists(string $short): string
+    {
+        $result = $this->urlContract->search($short);
+
+        while (!is_null($result)) {
+            $newShort = $this->generateRandomUuid();
+            $result = $this->urlContract->search($newShort);
+        }
+
+        return isset($newShort) ? $newShort : $short;
+    }
+
+    /**
+     * Create new url short
      *
      * @param string $url
      * @return bool
      */
-    public function createUrlShort(string $url): bool
+    public function createUrlShort(string $url)
     {
-        $short = $this->generateRandomUuid();
+        if (empty($url)) {
+            throw new UrlEmptyException();
+        }
 
-        $this->urlRepo->createNew(['original' => $url, 'short' => $short]);
+        $short = $this->shortExists($this->generateRandomUuid());
 
-        return true;
+        $result = $this->urlContract->createNew(['origin' => $url, 'short' => $short]);
+
+        return is_integer($result) ? true : false;
     }
 
     /**
@@ -83,16 +108,14 @@ class UrlService
     /**
      * Search original url by url short
      *
-     * @param string $urlshort -short url
+     * @param string $urlshort - url short
      * @return string
      */
-    public function redirectTo(string $urlshort): string
+    public function addClickCount(string $urlshort): void
     {
-        $url = $this->urlRepo->search($urlshort);
+        $url = $this->urlContract->search($urlshort);
 
-        $this->addClick(['short' => $urlshort, 'clicks' => $url->clicks + 1]);
-
-        return $url->original;
+        $this->updateClick(['short' => $urlshort, 'clicks' => $url->clicks + 1]);
     }
 
     /**
@@ -101,8 +124,8 @@ class UrlService
      * @param array $data
      * @return void
      */
-    public function addClick(array $data): void
+    public function updateClick(array $data): void
     {
-        $this->urlRepo->update($data);
+        $this->urlContract->update($data);
     }
 }

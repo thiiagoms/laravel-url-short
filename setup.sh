@@ -1,56 +1,46 @@
-<p align="center">
-  <a href="https://github.com/thiiagoms/urlshort">
-    <img src="assets/logo.png" alt="Logo" width="80" height="80">
-  </a>
-     <h3 align="center">Short your favorite urls :gloves:</h3>
-</p>
-<br>
+#!/bin/bash
 
-You can short your favorites urls with this application! Only for **education purposes**!
+clear
 
-- [Dependencies](#Dependencies)
-- [Install](#Install)
-- [Run](#Run)
+RED="\e[31m"
+GREEN="\e[32m"
+WHITE="\e[97m"
+ENDCOLOR="\e[0m"
 
-## Dependencies
-
-- Docker
-
-## Install
-
-01- Clone this repository:
-
-```bash
-$ git clone https://github.com/thiiagoms/url-short.git
-```
-
-02 - Change to repository directory:
-```bash
-$ cd url-short
-```
-
-03 - Execute `setup.sh`: 
-```bash
-url-short $ chmod +x ./setup.sh
-url-short $ ./setup.sh
-
+echo -e "
+${RED}
 ██╗   ██╗██████╗ ██╗         ███████╗██╗  ██╗ ██████╗ ██████╗ ████████╗
 ██║   ██║██╔══██╗██║         ██╔════╝██║  ██║██╔═══██╗██╔══██╗╚══██╔══╝
 ██║   ██║██████╔╝██║         ███████╗███████║██║   ██║██████╔╝   ██║
 ██║   ██║██╔══██╗██║         ╚════██║██╔══██║██║   ██║██╔══██╗   ██║
 ╚██████╔╝██║  ██║███████╗    ███████║██║  ██║╚██████╔╝██║  ██║   ██║
  ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-
+${ENDCOLOR}
+${RED}
     [*] Author: Thiago Silva AKA thiiagoms
     [*] E-mail: thiagom.devsec@gmail.com
+${ENDCOLOR}
+\n";
 
-=> SetUp containers
+echo -e "=> SetUp containers\n"
 
-=> Install app dependencies
+{
+    docker-compose up -d
+} &> /dev/null
 
-=> Running migrations
+echo -e "\n=> Install app dependencies\n"
 
-[*] Listening application on http://localhost:8000
-```
+{
+    docker-compose exec app composer install
+} &> /dev/null
 
-04 - Go to `http://localhost:8000`
+echo -e "\n=> Running migrations\n"
+
+{
+    docker-compose exec app cp .env.example .env
+    docker-compose exec app php artisan key:generate
+    docker-compose exec app php artisan migrate
+}  &> /dev/null
+
+
+echo -e "\n[*] Listening application on ${GREEN}http://localhost:8000\n${ENDCOLOR}"

@@ -3,30 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Services\UrlService;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\{RedirectResponse, Request, Response};
+use Illuminate\Http\{RedirectResponse, Request};
 
-class UrlController extends Controller
+/**
+ * URL Controller package
+ *
+ * @package App\Http\Controllers
+ * @author  Thiago Silva <thiagom.devsec@gmail.com>
+ * @version 1.1
+ */
+final class UrlController extends Controller
 {
-    /**
-     * Logical business
-     *
-     * @var UrlService
-     */
-    private UrlService $urlService;
-
-    public function __construct(UrlService $urlService)
+    public function __construct(private UrlService $urlService)
     {
-        $this->urlService = $urlService;
     }
 
     /**
-     * Display a listing of the resource.
+     * List all urls
      *
      * @return View
      */
-    public function index(Request $request): View
+    public function index(): View
     {
         return view('urls.index', [
             'urls' => $this->urlService->urlList()
@@ -51,27 +49,23 @@ class UrlController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-
-        if (filter_var($request->url, FILTER_VALIDATE_URL)) {
-            $short = $this->urlService->createUrlShort($request->url());
-
-            if ($short) {
-                return redirect()->route('urls.index');
-            }
+        if (is_null($request->urlOrigin) || empty($request->urlOrigin)) {
+            return back()->with('error', "URL can't be empty or null");
         }
 
-        return redirect()->back()->withErrors("Url {$request->url} is invalid");
+        $this->urlService->createUrlShort($request->urlOrigin);
+
+        return redirect()->route('url.index');
     }
 
     /**
      * Redirect user to original url
      *
-     * @param string $shortUrl
-     * @return RedirectResponse
+     * @param Request $request
+     * @return void
      */
-    public function redirectUser(string $shortUrl): RedirectResponse
+    public function clickCount(Request $request): void
     {
-
-        return redirect($this->urlService->redirectTo($shortUrl));
+        $this->urlService->addClickCount($request->short);
     }
 }
