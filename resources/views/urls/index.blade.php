@@ -5,14 +5,15 @@
 @endsection
 
 @section('content')
-
     <div class="d-flex justify-content-center mt-4 mb-4 text-center">
         <div class="container-fluid py-5">
             <h1 class="display-5 fw-bold">Urls List</h1>
         </div>
     </div>
 
-    <a href="{{ route('urls.create') }}" class="btn btn-dark mb-2">Add</a>
+    @include('messages.message')
+
+    <a href="{{ route('url.create') }}" class="btn btn-dark mb-2">Add</a>
 
     <table class="table">
         <thead>
@@ -23,12 +24,12 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach ($urls as $url)
                 <tr>
-                    <td>{{ $url['original'] }}</td>
+                    <td>{{ $url['origin'] }}</td>
                     <td>
-                        <a href="{{ route('urls.redirectUser', ['short' => $url['short'] ]) }}">
+                        <a href="{{ $url['origin'] }}"
+                            onclick="addClickCounter('{{ $url['short'] }}')">
                             {{ $url['short'] }}
                         </a>
                     </td>
@@ -37,5 +38,22 @@
             @endforeach
         </tbody>
     </table>
+
+    @section('scripts')
+        <script>
+            function addClickCounter(shortLink) {
+                $.post(
+                    '{{ route("api.url.count") }}',
+                    {
+                        "_token": "{{ csrf_token() }}",
+                        short: shortLink
+                    },
+                    function data(data) {
+                        console.log(data);
+                    }
+                );
+            }
+        </script>
+    @endsection
 
 @endsection
