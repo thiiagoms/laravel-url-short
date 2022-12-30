@@ -34,17 +34,6 @@ class UrlServiceTest extends TestCase
         $urlServiceTest->createUrlShort($url);
     }
 
-    final public function test_create_url_short_for_two_urls(): void
-    {
-        $url1 = 'https://google.com';
-
-        $urlServiceTest = new UrlService($this->urlContractTest);
-
-        $result = $urlServiceTest->createUrlShort($url1);
-
-        self::assertEquals(true, $result);
-    }
-
     /**
      * A basic unit test example.
      *
