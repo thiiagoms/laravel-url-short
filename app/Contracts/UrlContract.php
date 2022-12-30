@@ -35,9 +35,9 @@ interface UrlContract
      * Create new url short
      *
      * @param array $data
-     * @return Url
+     * @return void
      */
-    public function createNew(array $data): Url;
+    public function createNew(array $data): void;
 
     /**
      * Update url data

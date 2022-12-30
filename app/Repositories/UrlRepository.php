@@ -36,11 +36,11 @@ class UrlRepository extends Repository implements UrlContract
      * Create new url resource
      *
      * @param array $data - data to store
-     * @return int
+     * @return void
      */
-    public function createNew(array $data): Url
+    public function createNew(array $data): void
     {
-        return $this->model->create($data);
+        $this->model->create($data);
     }
 
     /**
